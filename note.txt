@@ -1,0 +1,348 @@
+table plus / pg admin => client 
+table plus / pg admin => send SQL codes to server (database client app) GUI
+
+DQL Shell psql => TUI
+
+prisma => ORM for JS and TS - object relational mapping
+ORM => converting data between a relational database and the heap of an object-oriented programming language
+
+fetch => sent backend data to frontend 
+Prisma => sent data from database to backend
+
+--------- postgre setup ---------
+
+name => foodie-pos-db-localhost 
+host => localhost
+port => 5432
+User => postgres 
+password => *****
+Database => postgres 
+
+--------------------------------------------------------------------------------------------------
+
+front data => sent to postgres
+
+Prisma => ORM 
+Relation => tables (db)
+javascript / typescript => do not work with tables 
+javascript / typescript => work with objects 
+
+ORM => connect table world with object world 
+User table => user.find({name: "@#$$@#!"}) 
+
+--------------------------------------------------------------------------------------------------
+
+Prisma installation 
+
+npm i prisma -D 
+npx prisma init 
+
+Database url text will be inserted in .env file 
+
+DATABASE_URL="postgresql://johndoe:randompassword@localhost:5432/mydb?schema=public"
+
+DATABASE_URL="postgresql://username:password@localhost:5432/mydb?schema=public"
+
+DATABASE_URL="postgresql://postgres:Postgre081922@localhost:5432/novakdb?schema=public"
+
+=> Postgres engine ---> dbs ---> relations (tables) 
+
+prisma => schema.prisma is added 
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+=>  url = env("DATABASE_URL") => .env file => DATABASE_URL
+
+// data creating and structuring will not be done manually 
+// will be done by Prisma 
+
+// tables created in tableplus are called models 
+// Prisma => create models => build tables in TablePlus 
+
+
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String?            (nullable)
+  posts Post[]
+}
+
+model Post {
+  id        Int     @id @default(autoincrement())
+  title     String
+  content   String?         (nullable)
+  published Boolean @default(false)
+  author    User    @relation(fields: [authorId], references: [id])
+  authorId  Int
+}
+
+// @id ---> define which row is id 
+// @unique ---> no overlapping value 
+// @default(autoincrement())  => increase id automatically 
+
+// Prisma => create model in Objects => generate relations (tables) - in TablePlus
+// Prisma connect relations and objects 
+
+
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String?
+  posts Post[]
+}
+
+model Post {
+  id        Int     @id @default(autoincrement())
+  title     String
+  content   String?
+  published Boolean @default(false)
+  author    User    @relation(fields: [authorId], references: [id])
+  authorId  Int
+}
+
+model => create table 
+User.posts.author 
+
+
+-----------------------------------------------------------------------------
+
+
+=> Employee Table 
+id - 1
+name - Novak
+departmentId - 2
+
+=> Department Table 
+id - 1 / name - Marketing 
+id - 2 / name - Software
+id - 3 / name - HR 
+id - 4 / name - Business
+
+===================================================================================================
+
+installation 
+
+--------------------------------------------- stage 1 
+
+npm i prisma -D 
+npx prisma init 
+
+DATABASE_URL="postgresql://postgres:Postgre081922@localhost:5432/novakdb?schema=public"
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+--------------------------------------------- stage 2 
+
+model data in prisma schema 
+
+prisma > schema.prisma 
+
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String?
+  posts Post[]     
+  // will not be included as column - only existed as information 
+}
+
+model Post {
+  id        Int     @id @default(autoincrement())
+  title     String
+  content   String?
+  published Boolean @default(false)
+  author    User    @relation(fields: [authorId], references: [id])   
+  // will not be included as column - only existed as information  
+  authorId  Int
+}
+
+--------------------------------------------- stage 3 migration 
+
+// prisma migrate => history record => changes due to timezone 
+// prisma migrate ---> prisma.client installed 
+
+npx prisma migrate dev --name init
+
+migration folder added under prisma folder
+
+1 --> create a new SQL migration file in prisma/directory file 
+2 --> create db 
+
+posts Post[]
+author    User    @relation(fields: [authorId], references: [id])
+// will not be included as column - only existed as information 
+
+***** foreign key => value from another table ******
+
+table plus > post > structure => authorId ---> foreign_key ---> public.User(id)
+
+authorId = User > Id 
+
+? => nullable (optional)
+
+Post table => authorId is required *** (must be connected to User table id)
+User table => id --> 1 
+User table save first > post table later (post table author id must be equal to )  
+
+------------------------------------------------------------------------------------------------
+
+SQL 
+
+create table "Test" (
+  id serial 
+  menu text 
+)
+
+Run current > refresh 
+
+drop table "Test"
+select * from "User" 
+
+Run current
+
+Prisma => JS --> SQL / SQL --> JS 
+
+SQL db list => PostgreSQL / MySQL / MongoDB / SQLite / Oracle Database 
+
+===================================================================================================
+
+When prisma installed => prisma/client auto installed 
+
+src > utils folder > db.ts 
+
+import { PrismaClient } from "@prisma/client";
+export const prisma = new PrismaClient();
+
+Postman --> http request --> get --> prisma --> User --> respond 
+
+------------------------------------------------------------------------------
+
+prisma => returns promise (similar to fetch) => require await ****
+// to use prisma => async func required => await required 
+
+prisma installed > prisma.client auto installed > CRUD 
+
+const users = await prisma.user.findMany();
+
+const user = await prisma.user.create({ data: { name, email } });
+
+  else if (method === "POST") {
+    const { name, email } = req.body;
+    const isValid = name && email;
+    if (!isValid) return res.status(400).send("Bad Request");
+
+    const user = await prisma.user.create({ data: { name, email } });
+    return res.send(user);
+  }
+
+schema.prisma 
+=> create -->  createdAt DateTime @default(now())
+=> update -->  updatedAt DateTime @updatedAt
+
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String?
+  createdAt       DateTime      @default(now())  ***
+  updatedAt       DateTime      @updatedAt       ***
+  posts Post[]
+}
+
+*** model => updated => migration required  
+prisma migration starts => npx prisma migrate dev --name init 
+
+model User {
+  id            Int         @id @default(autoincrement())
+  email         String      @unique
+  name          String?
+  posts         Post[]
+  isArchived    Boolean?     @default(false)
+  createdAt     DateTime?    @default(now())
+  updatedAt     DateTime?    @updatedAt
+}
+
+model Post {
+  id            Int         @id @default(autoincrement())
+  title         String
+  content       String?
+  published     Boolean     @default(false)
+  author        User        @relation(fields: [authorId], references: [id])
+  authorId      Int
+  isArchived    Boolean?     @default(false)
+  createdAt     DateTime?    @default(now())
+  updatedAt     DateTime?    @updatedAt
+}
+
+prisma migration updated => npx prisma migrate dev --name added_created_updated_isArchived_fields 
+
+prisma > migrations folder > new migration folder added 
+
+You database is now in sync with your schema  
+
+-------------------------------------------------------------------------------------------------------------
+
+prisma migration updated => npx prisma migrate dev --name make_some_fields_not_optional
+
+model User {
+  id            Int         @id @default(autoincrement())
+  email         String      @unique
+  name          String?
+  posts         Post[]
+  isArchived    Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Post {
+  id            Int         @id @default(autoincrement())
+  title         String
+  content       String?
+  published     Boolean     @default(false)
+  author        User        @relation(fields: [authorId], references: [id])
+  authorId      Int
+  isArchived    Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+Error: 
+⚠️ We found changes that cannot be executed:
+  • Step 0 Made the column `updatedAt` on table `Post` required, but there are 1 existing NULL values.
+  • Step 1 Made the column `updatedAt` on table `User` required, but there are 1 existing NULL values.
+You can use prisma migrate dev --create-only to create the migration file, and manually modify it to address the underlying issue(s).
+Then run prisma migrate dev to apply it and verify it works.
+
+--------------------------------------------------------------------------------
+
+npx prisma db push 
+npx prisma db push --force-reset 
+
+DELETE => params => http://localhost:3000/api/user?id=123
+
+// update
+
+
+else if (method === "PUT") {
+    const { id } = req.body;
+
+    const updateUser = await prisma.user.update({
+      data: { isArchived: true },
+      where: { id },
+    });
+
+    return res.send(updateUser);
+  }
+
